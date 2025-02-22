@@ -1,11 +1,9 @@
 from odmantic import Model, Reference
-from datetime import date
-
+from datetime import datetime
 
 class Voluntario(Model):
     nome: str
     email: str
-    data_nascimento: date
     area_interesse: str
     
 class Organizacao(Model):
@@ -13,11 +11,10 @@ class Organizacao(Model):
     localizacao: str
     causa_apoiada: str
     
-
 class Vaga(Model):
     titulo_vaga: str
     descricao_vaga: str
-    data_publicacao: date
+    data_publicacao: datetime
     status_vaga: str
     organizacao: Organizacao = Reference()
     
