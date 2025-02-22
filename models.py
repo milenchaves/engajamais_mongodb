@@ -1,5 +1,6 @@
 from odmantic import Model, Reference
 from datetime import datetime
+from bson import ObjectId
 
 class Voluntario(Model):
     nome: str
@@ -16,9 +17,9 @@ class Vaga(Model):
     descricao_vaga: str
     data_publicacao: datetime
     status_vaga: str
-    organizacao: Organizacao = Reference()
+    organizacao_id: list[ObjectId]
     
 class Inscricao(Model):
     status: str
-    vaga: Vaga = Reference()
-    voluntario: Voluntario = Reference()
+    vaga_id: list[ObjectId]
+    voluntario: list[ObjectId]
