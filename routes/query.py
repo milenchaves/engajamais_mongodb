@@ -61,35 +61,18 @@ async def total_voluntarios_por_organizacao(
     engine: AIOEngine = Depends(get_engine)
 ):
     try:
-        organizacao_id = ObjectId(id_organizacao)  # Convertendo o id para ObjectId
+        organizacao_id = ObjectId(id_organizacao)  
     except Exception:
         raise HTTPException(status_code=400, detail="ID da organização inválido")
     
-    # Pipeline de agregação
-    pipeline = [
-        {
-            "$match": {
-                "organizacao_id": organizacao_id  # Filtra os voluntários que pertencem à organização
-            }
-        },
-        {
-            "$count": "total_voluntarios"  # Conta o número de voluntários
-        },
-        {
-            "$skip": offset  # Aplica o offset
-        },
-        {
-            "$limit": limit  # Aplica o limite
-        }
+    pipeline = [{ "$match": { "organizacao_id": organizacao_id}},{"$count": "total_voluntarios"},
+                {"$skip": offset},{"$limit": limit}
     ]
-    
-    # Rodando a agregação na coleção de voluntários
     resultado = await engine.client.engajamais["voluntario"].aggregate(pipeline).to_list(length=None)
     
     if not resultado:
         raise HTTPException(status_code=404, detail="Nenhum voluntário encontrado para essa organização")
 
-    # Estruturando a resposta
     return {"total_voluntarios_por_organizacao": resultado}
     
 
