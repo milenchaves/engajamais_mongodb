@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from database import get_engine
-from models import Vaga
+from models import Vaga, Organizacao
 from odmantic import ObjectId
 
 router = APIRouter(
@@ -24,6 +24,16 @@ async def get_vaga(vaga_id: str) -> Vaga:
 
 @router.post("/", response_model=Vaga)
 async def create_vaga(vaga: Vaga) -> Vaga:
+    
+    organizacao_existe = await engine.find_one(Organizacao, Organizacao.id == vaga.organizacao_id)
+    
+    # Se a organização não existir, retorna um erro 404
+    if not organizacao_existe:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Organização com ID {vaga.organizacao_id} não encontrada."
+        )
+    
     await engine.save(vaga)
     return vaga
 
