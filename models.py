@@ -24,4 +24,4 @@ class Vaga(Model):
 class Inscricao(Model):
     status: str
     vaga_id: ObjectId
-    voluntario: ObjectId
+    voluntario_id: ObjectId
