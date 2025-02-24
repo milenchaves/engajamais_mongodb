@@ -27,7 +27,6 @@ async def create_vaga(vaga: Vaga) -> Vaga:
     
     organizacao_existe = await engine.find_one(Organizacao, Organizacao.id == vaga.organizacao_id)
     
-    # Se a organização não existir, retorna um erro 404
     if not organizacao_existe:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

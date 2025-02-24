@@ -1,4 +1,4 @@
-from odmantic import Model, Reference, Field
+from odmantic import Model, Reference
 from typing import Optional
 from datetime import datetime
 from bson import ObjectId
@@ -19,9 +19,9 @@ class Vaga(Model):
     descricao_vaga: str
     data_publicacao: datetime
     status_vaga: str
-    organizacao_id: ObjectId
+    organizacao: Organizacao = Reference()
     
 class Inscricao(Model):
     status: str
-    vaga_id: ObjectId
-    voluntario_id: ObjectId
+    vaga: Vaga = Reference()
+    voluntario: Voluntario = Reference()
