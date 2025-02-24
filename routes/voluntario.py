@@ -22,7 +22,7 @@ async def listar_todos_voluntarios() -> list[Voluntario]:
     return voluntarios
 
 @router.get("/{voluntario_id}", response_model=Voluntario)
-async def listar_voluntario(voluntario_id: str) -> Voluntario:
+async def listar_voluntario_por_Id(voluntario_id: str) -> Voluntario:
     voluntario = await engine.find_one(Voluntario, Voluntario.id == ObjectId(voluntario_id))
     if not voluntario:
         raise HTTPException(status_code=404, detail="Voluntario not found")

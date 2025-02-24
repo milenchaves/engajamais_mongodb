@@ -21,13 +21,13 @@
         descricao_vaga: str
         data_publicacao: datetime
         status_vaga: str
-        organizacao_id: ObjectId
+        organizacao: Organização
     }
 
     class Inscricao {
         status: str
-        vaga_id: ObjectId
-        voluntario_id: ObjectId
+        vaga: Vaga
+        voluntario: Voluntario
     }
 
     Voluntario "*" -- "*" Organizacao

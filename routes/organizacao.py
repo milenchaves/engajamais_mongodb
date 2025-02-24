@@ -10,7 +10,6 @@ router = APIRouter(
 
 engine = get_engine()
 
-
 @router.post("/", response_model=Organizacao)
 async def criar_organizacao(organizacao: Organizacao) -> Organizacao:
     await engine.save(organizacao)

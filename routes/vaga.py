@@ -22,7 +22,7 @@ async def listar_todas_vagas() -> list[Vaga]:
     return vagas
 
 @router.get("/{vaga_id}", response_model=Vaga)
-async def listar_vaga(vaga_id: str) -> Vaga:
+async def listar_vaga_por_id(vaga_id: str) -> Vaga:
     vaga = await engine.find_one(Vaga, Vaga.id == ObjectId(vaga_id))
     if not vaga:
         raise HTTPException(status_code=404, detail="Vaga not found")

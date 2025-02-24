@@ -28,7 +28,7 @@ async def listar_vagas_por_organizacao(
     if not organizacao:
         raise HTTPException(status_code=404, detail="Organização não encontrada")
     
-    vagas = await engine.find(Vaga, Vaga.organizacao_id == organizacao_id, skip=offset, limit=limit)
+    vagas = await engine.find(Vaga, Vaga.organizacao == organizacao_id, skip=offset, limit=limit)
 
     return {"organizacao": organizacao, "vagas": vagas }
 
@@ -74,7 +74,6 @@ async def total_voluntarios_por_organizacao(
         raise HTTPException(status_code=404, detail="Nenhum voluntário encontrado para essa organização")
 
     return {"total_voluntarios_por_organizacao": resultado}
-    
 
 @router.get("/vagas_por_localizacao")
 async def listar_vagas_por_localizacao(
@@ -92,11 +91,39 @@ async def listar_vagas_por_localizacao(
 
     resultado = []
     for org in organizacoes:
-        vagas = await engine.find(Vaga, Vaga.organizacao_id == org.id)
+        vagas = await engine.find(Vaga, Vaga.organizacao == org.id)
         for vaga in vagas:
             resultado.append({
                 "vaga": vaga,
                 "organizacao": org
             })
- 
+            
     return {"vagas": resultado}
+
+@router.get("/organizacoes_ordenadas")
+async def listar_organizacoes_ordenadas(
+    ordem: str = Query(..., description="Ordem de classificação (asc ou desc)"),
+    limit: int = Query(10, alias="limit"),
+    offset: int = Query(0, alias="offset"),
+    engine: AIOEngine = Depends(get_engine)
+):
+    if ordem.lower() == "asc":
+        sort_order = 1 
+    elif ordem.lower() == "desc":
+        sort_order = -1  
+    else:
+        raise HTTPException(status_code=400, detail="Ordem inválida. Use 'asc' ou 'desc'.")
+
+    organizacoes = await engine.client.engajamais["organizacao"].find({}, skip=offset, limit=limit  
+    ).sort("nome_organizacao", sort_order).to_list(length=None)
+    
+    if not organizacoes:
+        raise HTTPException(status_code=404, detail="Nenhuma organização encontrada.")
+
+    for org in organizacoes:
+        org["_id"] = str(org["_id"])
+
+    return {"organizacoes": organizacoes}
+
+
+
