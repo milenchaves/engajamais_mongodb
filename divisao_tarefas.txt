@@ -26,4 +26,4 @@ Implementou metade das consultas presentes no arquivo query.py.
 
 - Trabalho Conjunto
 
-Os arquivos main.py, models.py e database.py e uma consulta foram desenvolvidos pelos dois membros da dupla.
+Os arquivos main.py, models.py e database.py foram desenvolvidos pelos dois membros da dupla.
