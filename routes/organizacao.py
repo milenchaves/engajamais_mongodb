@@ -10,25 +10,26 @@ router = APIRouter(
 
 engine = get_engine()
 
+
+@router.post("/", response_model=Organizacao)
+async def criar_organizacao(organizacao: Organizacao) -> Organizacao:
+    await engine.save(organizacao)
+    return organizacao
+
 @router.get("/", response_model=list[Organizacao])
-async def get_all_organizacoes() -> list[Organizacao]:
+async def listar_todas_organizacoes() -> list[Organizacao]:
     organizacoes = await engine.find(Organizacao)
     return organizacoes
 
 @router.get("/{organizacao_id}", response_model=Organizacao)
-async def get_organizacao(organizacao_id: str) -> Organizacao:
+async def listar_organizacao_por_id(organizacao_id: str) -> Organizacao:
     organizacao = await engine.find_one(Organizacao, Organizacao.id == ObjectId(organizacao_id))
     if not organizacao:
         raise HTTPException(status_code=404, detail="Organizacao not found")
     return organizacao
 
-@router.post("/", response_model=Organizacao)
-async def create_organizacao(organizacao: Organizacao) -> Organizacao:
-    await engine.save(organizacao)
-    return organizacao
-
 @router.put("/{organizacao_id}", response_model=Organizacao)
-async def update_organizacao(organizacao_id: str, organizacao_data: dict) -> Organizacao:
+async def atualizar_organizacao(organizacao_id: str, organizacao_data: dict) -> Organizacao:
     organizacao = await engine.find_one(Organizacao, Organizacao.id == ObjectId(organizacao_id))
     if not organizacao:
         raise HTTPException(status_code=404, detail="Organizacao not found")
@@ -38,7 +39,7 @@ async def update_organizacao(organizacao_id: str, organizacao_data: dict) -> Org
     return organizacao
 
 @router.delete("/{organizacao_id}")
-async def delete_organizacao(organizacao_id: str) -> dict:
+async def deletar_organizacao(organizacao_id: str) -> dict:
     organizacao = await engine.find_one(Organizacao, Organizacao.id == ObjectId(organizacao_id))
     if not organizacao:
         raise HTTPException(status_code=404, detail="Organizacao not found")

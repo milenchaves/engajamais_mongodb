@@ -10,33 +10,26 @@ router = APIRouter(
 
 engine = get_engine()
 
+
+@router.post("/inscricao/", response_model=Inscricao)
+async def criar_inscricao(inscricao: Inscricao) -> Inscricao:
+    await engine.save(inscricao)
+    return inscricao
+
 @router.get("/", response_model=list[Inscricao])
-async def get_all_inscricoes() -> list[Inscricao]:
+async def listar_todas_inscricoes() -> list[Inscricao]:
     inscricoes = await engine.find(Inscricao)
     return inscricoes
 
 @router.get("/{inscricao_id}", response_model=Inscricao)
-async def get_inscricao(inscricao_id: str) -> Inscricao:
+async def lista_inscricao_por_id(inscricao_id: str) -> Inscricao:
     inscricao = await engine.find_one(Inscricao, Inscricao.id == ObjectId(inscricao_id))
     if not inscricao:
         raise HTTPException(status_code=404, detail="Inscricao not found")
     return inscricao
 
-@router.post("/inscricao/", response_model=Inscricao)
-async def create_inscricao(inscricao: Inscricao) -> Inscricao:
-    vaga_existente = await engine.find_one(Vaga, Vaga.id == inscricao.vaga_id)
-    if not vaga_existente:
-        raise HTTPException(status_code=404, detail="Vaga não encontrada")
-
-    voluntario_existente = await engine.find_one(Voluntario, Voluntario.id == inscricao.voluntario_id)
-    if not voluntario_existente:
-        raise HTTPException(status_code=404, detail="Voluntário não encontrado")
-
-    await engine.save(inscricao)
-    return inscricao
-
 @router.put("/{inscricao_id}", response_model=Inscricao)
-async def update_inscricao(inscricao_id: str, inscricao_data: dict) -> Inscricao:
+async def atualizar_inscricao(inscricao_id: str, inscricao_data: dict) -> Inscricao:
     inscricao = await engine.find_one(Inscricao, Inscricao.id == ObjectId(inscricao_id))
     if not inscricao:
         raise HTTPException(status_code=404, detail="Inscricao not found")
@@ -46,7 +39,7 @@ async def update_inscricao(inscricao_id: str, inscricao_data: dict) -> Inscricao
     return inscricao
 
 @router.delete("/{inscricao_id}")
-async def delete_inscricao(inscricao_id: str) -> dict:
+async def deletar_inscricao(inscricao_id: str) -> dict:
     inscricao = await engine.find_one(Inscricao, Inscricao.id == ObjectId(inscricao_id))
     if not inscricao:
         raise HTTPException(status_code=404, detail="Inscricao not found")

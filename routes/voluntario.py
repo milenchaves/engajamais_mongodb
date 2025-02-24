@@ -10,25 +10,26 @@ router = APIRouter(
 
 engine = get_engine()
 
+
+@router.post("/", response_model=Voluntario)
+async def criar_voluntario(voluntario: Voluntario) -> Voluntario:
+    await engine.save(voluntario)
+    return voluntario
+
 @router.get("/", response_model=list[Voluntario])
-async def get_all_voluntarios() -> list[Voluntario]:
+async def listar_todos_voluntarios() -> list[Voluntario]:
     voluntarios = await engine.find(Voluntario)
     return voluntarios
 
 @router.get("/{voluntario_id}", response_model=Voluntario)
-async def get_voluntario(voluntario_id: str) -> Voluntario:
+async def listar_voluntario(voluntario_id: str) -> Voluntario:
     voluntario = await engine.find_one(Voluntario, Voluntario.id == ObjectId(voluntario_id))
     if not voluntario:
         raise HTTPException(status_code=404, detail="Voluntario not found")
     return voluntario
 
-@router.post("/", response_model=Voluntario)
-async def create_voluntario(voluntario: Voluntario) -> Voluntario:
-    await engine.save(voluntario)
-    return voluntario
-
 @router.put("/{voluntario_id}", response_model=Voluntario)
-async def update_voluntario(voluntario_id: str, voluntario_data: dict) -> Voluntario:
+async def atualizar_voluntario(voluntario_id: str, voluntario_data: dict) -> Voluntario:
     voluntario = await engine.find_one(Voluntario, Voluntario.id == ObjectId(voluntario_id))
     if not voluntario:
         raise HTTPException(status_code=404, detail="Voluntario not found")
@@ -38,7 +39,7 @@ async def update_voluntario(voluntario_id: str, voluntario_data: dict) -> Volunt
     return voluntario
 
 @router.delete("/{voluntario_id}")
-async def delete_voluntario(voluntario_id: str) -> dict:
+async def deletar_voluntario(voluntario_id: str) -> dict:
     voluntario = await engine.find_one(Voluntario, Voluntario.id == ObjectId(voluntario_id))
     if not voluntario:
         raise HTTPException(status_code=404, detail="Voluntario not found")

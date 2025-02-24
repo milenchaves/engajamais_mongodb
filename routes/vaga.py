@@ -10,34 +10,26 @@ router = APIRouter(
 
 engine = get_engine()
 
+
+@router.post("/", response_model=Vaga)
+async def criar_vaga(vaga: Vaga) -> Vaga:
+    await engine.save(vaga)
+    return vaga
+
 @router.get("/", response_model=list[Vaga])
-async def get_all_vagas() -> list[Vaga]:
+async def listar_todas_vagas() -> list[Vaga]:
     vagas = await engine.find(Vaga)
     return vagas
 
 @router.get("/{vaga_id}", response_model=Vaga)
-async def get_vaga(vaga_id: str) -> Vaga:
+async def listar_vaga(vaga_id: str) -> Vaga:
     vaga = await engine.find_one(Vaga, Vaga.id == ObjectId(vaga_id))
     if not vaga:
         raise HTTPException(status_code=404, detail="Vaga not found")
     return vaga
 
-@router.post("/", response_model=Vaga)
-async def create_vaga(vaga: Vaga) -> Vaga:
-    
-    organizacao_existe = await engine.find_one(Organizacao, Organizacao.id == vaga.organizacao_id)
-    
-    if not organizacao_existe:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Organização com ID {vaga.organizacao_id} não encontrada."
-        )
-    
-    await engine.save(vaga)
-    return vaga
-
 @router.put("/{vaga_id}", response_model=Vaga)
-async def update_vaga(vaga_id: str, vaga_data: dict) -> Vaga:
+async def atualizar_vaga(vaga_id: str, vaga_data: dict) -> Vaga:
     vaga = await engine.find_one(Vaga, Vaga.id == ObjectId(vaga_id))
     if not vaga:
         raise HTTPException(status_code=404, detail="Vaga not found")
@@ -47,7 +39,7 @@ async def update_vaga(vaga_id: str, vaga_data: dict) -> Vaga:
     return vaga
 
 @router.delete("/{vaga_id}")
-async def delete_vaga(vaga_id: str) -> dict:
+async def deletar_vaga(vaga_id: str) -> dict:
     vaga = await engine.find_one(Vaga, Vaga.id == ObjectId(vaga_id))
     if not vaga:
         raise HTTPException(status_code=404, detail="Vaga not found")
