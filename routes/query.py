@@ -1,6 +1,7 @@
 from odmantic import AIOEngine
 from fastapi import APIRouter, HTTPException, Query, Depends
 from bson import ObjectId
+from datetime import datetime
 from database import get_engine
 from models import Vaga, Organizacao, Voluntario, Inscricao
 
@@ -125,5 +126,32 @@ async def listar_organizacoes_ordenadas(
 
     return {"organizacoes": organizacoes}
 
+@router.get("/vagas_por_data")
+async def listar_vagas_por_data(
+    ano: int = Query(..., description="Ano da publicação da vaga"),
+    mes: int = Query(None, description="Mês da publicação (opcional)"),
+    limit: int = Query(10, alias="limit"),
+    offset: int = Query(0, alias="offset"),
+    engine: AIOEngine = Depends(get_engine)
+):
+    filtro_data = {
+        "$gte": datetime(ano, 1, 1),
+        "$lt": datetime(ano + 1, 1, 1)
+    }
 
+    if mes:
+        filtro_data["$gte"] = datetime(ano, mes, 1)
+        if mes == 12:
+            filtro_data["$lt"] = datetime(ano + 1, 1, 1)
+        else:
+            filtro_data["$lt"] = datetime(ano, mes + 1, 1)
+
+    vagas = await engine.find(Vaga, {"data_publicacao": {"$gte": filtro_data["$gte"], "$lt": filtro_data["$lt"]}}, 
+    skip=offset, limit=limit
+)
+
+    if not vagas:
+        raise HTTPException(status_code=404, detail="Nenhuma vaga encontrada nesse período.")
+
+    return {"vagas": vagas}
 
