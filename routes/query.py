@@ -95,8 +95,7 @@ async def listar_vagas_por_localizacao(
         vagas = await engine.find(Vaga, Vaga.organizacao == org.id)
         for vaga in vagas:
             resultado.append({
-                "vaga": vaga,
-                "organizacao": org
+                "vaga": vaga
             })
             
     return {"vagas": resultado}
